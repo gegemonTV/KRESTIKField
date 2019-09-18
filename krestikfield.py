@@ -4,6 +4,8 @@ import random
 
 score = {'Player': 0, 'PC': 0}
 
+w_steps = {}
+
 def view_field():
     print(f''' {field[1]} │ {field[2]} │ {field[3]}
 ───┼───┼───
@@ -11,23 +13,48 @@ def view_field():
 ───┼───┼───
  {field[7]} │ {field[8]} │ {field[9]}''')
 
-def p_step():
-    step = int(input())
-    while field[step] == 'o' or field[step] == 'x':
-        step = int(input('input another numbor: '))
-    field[step] = 'x'
+def some_steps(let):
+    mb_steps = []
+    for i in range(1,10):
+        if field[i] == 'o' or field[i] == 'x':
+            continue
+        else:
+            mb_steps.append(f'{i}{let}')
+    return mb_steps
+
+
+def restring(m):
+    ch = ''
+    for i in range(len(m)-1):
+        ch+=m[i]
+    return ch
+
 
 def ai_step():
+    global w_steps
+    ch = ''
+    st = some_steps('o')
+    global game, field
     step = random.randint(1,9)
     while field[step] == 'o' or field[step] == 'x':
         step = random.randint(1,9)
     field[step] = 'o'
+    game.append(f'{step}o')
+    g = restring(game)
+    for i in range(len(st)):
+        ch = f'{g}{st[i]}'
+        if w_steps.get(ch) == None:
+            w_steps[ch] = 1
+             
+            print(w_steps)    
 
 def pc_step():
+    global game
     step = random.randint(1,9)
     while field[step] == 'o' or field[step] == 'x':
         step = random.randint(1,9)
     field[step] = 'x'
+    game.append(f'{step}x')
     
 def check_win(let):
     if field[1] == field[2] and field[2]==field[3] and field[1]==let:
@@ -55,14 +82,15 @@ def score_edit():
         
     elif check_win('o') == 1:
         score['PC'] += 1
-        
 
 
 while True:
+    game = []
     i=1
     field = {1: '1', 2: '2', 3: '3',
              4: '4', 5: '5', 6: '6',
              7: '7', 8: '8', 9: '9'}
+    
 
 
     
@@ -71,18 +99,19 @@ while True:
 
     while i<9:
         i+=1       
+        print()
+        print()
         
-        print()
-        print()
         ai_step()
+        
+        print(game)
+        
         if check_win('x') == 1:
-            print('жы!')
             score_edit()
             print(f"Player: {score['Player']} ============== PC: {score['PC']}")
             y = input('enter Enter')
             break
         if check_win('o')==1:
-            print('жыжищ!')
             score_edit()
             print(f"Player: {score['Player']} ============== PC: {score['PC']}")
             y = input('enter Enter')
@@ -90,16 +119,14 @@ while True:
         view_field()
         i+=1
         pc_step()
-         
-        
+        view_field()
+        print(game)
         if check_win('x') == 1:
-            print('жы!')
             score_edit()
             print(f"Player: {score['Player']} ============== PC: {score['PC']}")
             y = input('enter Enter')
             break
         if check_win('o')==1:
-            print('жыжищ!')
             score_edit()
             print(f"Player: {score['Player']} ============== PC: {score['PC']}")
             y = input('enter Enter')
@@ -111,5 +138,6 @@ while True:
         if check_win('x') ==0 and check_win('o') == 0:
             print('nothing')
             y = input('enter Enter')
+    print(w_steps)
             
    
