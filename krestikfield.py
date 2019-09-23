@@ -1,7 +1,10 @@
 import random
 
+game = []
 
+q = 0.1
 
+rand_chance = 5
 score = {'Player': 0, 'PC': 0}
 
 w_steps = {}
@@ -21,33 +24,39 @@ def some_steps(let):
         else:
             mb_steps.append(f'{i}{let}')
     return mb_steps
-
-
+    
 def restring(m):
     ch = ''
-    for i in range(len(m)-1):
+    for i in range(len(m)):
         ch+=m[i]
     return ch
 
 
+
 def ai_step():
-    global w_steps
+    global w_steps,game
+    b_steps = {}
     ch = ''
     st = some_steps('o')
     global game, field
-    step = random.randint(1,9)
-    while field[step] == 'o' or field[step] == 'x':
-        step = random.randint(1,9)
-    field[step] = 'o'
-    game.append(f'{step}o')
     g = restring(game)
     for i in range(len(st)):
         ch = f'{g}{st[i]}'
         if w_steps.get(ch) == None:
             w_steps[ch] = 1
-             
-            print(w_steps)    
-
+            
+        b_steps[ch] = w_steps[ch]
+    max_step = max(b_steps, key = b_steps.get)
+    if random.randint(1,100)> rand_chance:
+        step = int(max_step[-2])
+    else:
+        step = random.randint(1,9)
+        while field[step] == 'o' or field[step] == 'x':
+            step = random.randint(1,9)
+    field[step] = 'o'
+    game.append(f'{step}o')
+    print(w_steps)
+            
 def pc_step():
     global game
     step = random.randint(1,9)
@@ -91,6 +100,7 @@ while True:
              4: '4', 5: '5', 6: '6',
              7: '7', 8: '8', 9: '9'}
     
+    game_ai = []
 
 
     
@@ -103,15 +113,23 @@ while True:
         print()
         
         ai_step()
-        
         print(game)
+        if i >1:
+            game_ai.append(restring(game))
+        print(game_ai)
         
         if check_win('x') == 1:
+            for i in range(0, len(game_ai)):
+                print(game_ai)
+                w_steps[game_ai[i]] -= q
             score_edit()
             print(f"Player: {score['Player']} ============== PC: {score['PC']}")
             y = input('enter Enter')
             break
         if check_win('o')==1:
+            for i in range(0, len(game_ai)):
+                print(game_ai)
+                w_steps[game_ai[i]] += q
             score_edit()
             print(f"Player: {score['Player']} ============== PC: {score['PC']}")
             y = input('enter Enter')
